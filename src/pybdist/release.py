@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright 2010 Google Inc.
 #
@@ -19,7 +19,7 @@ Code assumes that the release has a date and a version.
 And sections are separated by ======== or --------
 """
 
-import googlecode_update
+from . import googlecode_update
 import re
 import sys
 import time
@@ -75,8 +75,8 @@ def parse_deb_changelog(fname):
     grps = re_ver.search(line)
     if grps:
       if version:
-        print 'Bad changelog, got two versions %r & %r' % (version, grps.group(1))
-        print 'Probably means I couldn\'t find the date line "%s".' % re_date_exp
+        print('Bad changelog, got two versions %r & %r' % (version, grps.group(1)))
+        print('Probably means I couldn\'t find the date line "%s".' % re_date_exp)
         raise ReleaseException('Bad debian/changelog')
       version = grps.group(1)
       continue
@@ -127,4 +127,4 @@ def get_last_google_code_version(project_name):
 
 if __name__ == '__main__':
   VER, DATE, LINES = parse_last_release('RELEASE.rst')
-  print VER, DATE, LINES
+  print(VER, DATE, LINES)

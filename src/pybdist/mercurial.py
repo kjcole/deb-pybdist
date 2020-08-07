@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -31,13 +31,13 @@ def _run_ret(args, output=True):
   """
   lines = []
   if output:
-    print ' '.join(args)
+    print(' '.join(args))
   try:
     p = subprocess.Popen(args, stdout=subprocess.PIPE)
     text = p.communicate()[0]
     lines = text.split('\n')
     ret = p.returncode
-  except OSError, oserr:
+  except OSError as oserr:
     ret = -999
   return (ret, lines)
 
@@ -49,10 +49,10 @@ def needs_hg_push(verbose=True):
     return False
   if ret == 1:
     if verbose:
-      print 'Mercurial remote version up-to-date'
+      print('Mercurial remote version up-to-date')
     return False
   if verbose:
-    print 'Mercurial remote version needs push'
+    print('Mercurial remote version needs push')
   return True
 
 def needs_hg_commit(verbose=True):
@@ -60,18 +60,18 @@ def needs_hg_commit(verbose=True):
   ret, lines = _run_ret(args, verbose)
   if ret == -999:
     if verbose:
-      print 'Mercurial not found'
-      print '\n'.join(lines)
+      print('Mercurial not found')
+      print('\n'.join(lines))
     return False
   # Strip blank lines
   lines = [l for l in lines if l]
   if not lines:
     if verbose:
-      print 'Mercurial does not need a push', ret
+      print('Mercurial does not need a push', ret)
     return False
   if verbose:
-    print 'Mercurial needs commit, %d files out of date' % len(lines)
-    print '\n'.join(lines)
+    print('Mercurial needs commit, %d files out of date' % len(lines))
+    print('\n'.join(lines))
   return True
 
 if __name__ == '__main__':

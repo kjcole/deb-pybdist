@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -29,7 +29,7 @@ class I18nException(Exception):
 def _run_or_die(args, output=True):
   """Run the `args` (a list) or dies."""
   if output:
-    print ' '.join(args)
+    print(' '.join(args))
   ret = subprocess.call(args)
   if ret:
     raise I18nException('Error running: %r' % ' '.join(args))
@@ -127,4 +127,4 @@ def count_untranslated(locale_dir, langs):
         po = polib.pofile(pofilename)
         un = po.untranslated_entries()
         if un:
-          print '%r has %d untranslated entries' % (pofilename, len(un))
+          print('%r has %d untranslated entries' % (pofilename, len(un)))

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -61,7 +61,7 @@ def _safe_overwrite(lines, fname):
     os.makedirs(tmpdir)
   out_tempname = os.path.join(tmpdir, 'tmp.tmp')
   outf = codecs.open(out_tempname, encoding='utf-8', mode='w')
-  outf.write(u'\n'.join(lines))
+  outf.write('\n'.join(lines))
   outf.close()
   if os.path.exists(fname):
     if filecmp.cmp(out_tempname, fname):
@@ -70,7 +70,7 @@ def _safe_overwrite(lines, fname):
       return
 
     prompt = 'Update %r?: ' % fname
-    yn = raw_input(prompt)
+    yn = input(prompt)
     if yn.lower() != 'y':
       os.unlink(out_tempname)
       LOG.info('User requested not to overwrite')
@@ -82,4 +82,4 @@ def _safe_overwrite(lines, fname):
     os.rename(fname, backup_name)
   os.rename(out_tempname, fname)
   LOG.info('Wrote %r', fname)
-  print 'Updated %r' % fname
+  print('Updated %r' % fname)

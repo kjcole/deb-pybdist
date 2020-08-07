@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -22,7 +22,7 @@ import netrc
 import re
 import smtplib
 
-import release
+from . import release
 
 gettext.install('pybdist')
 logging.basicConfig()
@@ -118,7 +118,7 @@ def mail(setup):
   subject = create_subject(setup)
   message = create_message(setup)
   send_email(setup.MAILING_LIST, subject, message)
-  print 'Sent mail to %s' % setup.MAILING_LIST
+  print('Sent mail to %s' % setup.MAILING_LIST)
 
 if __name__ == '__main__':
   import sys
@@ -132,5 +132,5 @@ if __name__ == '__main__':
   if False:
     send_email(setup.MAILING_LIST, subject, message)
   else:
-    print subject
-    print message
+    print(subject)
+    print(message)

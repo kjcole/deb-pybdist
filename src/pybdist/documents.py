@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -35,8 +35,8 @@ import os
 import re
 import textwrap
 import time
-import urllib2
-import util
+import urllib.request, urllib.error, urllib.parse
+from . import util
 
 gettext.install('pybdist')
 logging.basicConfig()
@@ -174,7 +174,7 @@ def _set_locale(setup, lang):
   locale_dir = os.path.abspath(locale_dir)
   gtext = gettext.translation(setup.NAME, locale_dir, languages=[locale],
     fallback=True)
-  gtext.install(unicode=True)
+  gtext.install(str=True)
   _ = gtext.ugettext
   return dot_lang
 
@@ -196,7 +196,7 @@ def out_readme(setup):
 def out_license(setup):
   lic_text = setup.SETUP['license']
   to_fetch = None
-  for regex, info in LICENSES.items():
+  for regex, info in list(LICENSES.items()):
     if re.search(regex, lic_text, re.IGNORECASE):
       to_fetch = info
       break
@@ -211,7 +211,7 @@ def out_license(setup):
     LOG.info('License file already exists as %r' % license_fname)
   url, y_regex, name_regex = to_fetch
   if url.startswith('http'):
-    txt = urllib2.urlopen(url).read()
+    txt = urllib.request.urlopen(url).read()
   else:
     txt = open(os.path.join(os.path.dirname(__file__), url)).read()
     if url.endswith('rot13'):
@@ -228,7 +228,7 @@ def out_license(setup):
     txt = re_name.sub(copyright_name, txt)
   else:
     txt += ' ' + copyright_name
-  util._safe_overwrite(txt.split(u'\n'), license_fname)
+  util._safe_overwrite(txt.split('\n'), license_fname)
 
 def _install_lines(setup):
   lines = _title(_('Installing %s') % setup.NAME)
@@ -299,7 +299,7 @@ if __name__ == '__main__':
   import sys
   LOG.setLevel(logging.DEBUG)
   setup_dir = os.path.abspath(__file__ + '/../../..')
-  print setup_dir
+  print(setup_dir)
   sys.path.insert(0, setup_dir)
   import setup
   out_readme(setup)

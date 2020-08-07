@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 20l0 Google Inc. All Rights Reserved.
 #
@@ -17,7 +17,7 @@
 __author__ = 'scott@forusers.com (Scott Kirkwood)'
 
 import re
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 def get_latest_version(project_name):
   """Get the version, download fname, and md5 hash.
@@ -32,10 +32,10 @@ def get_latest_version(project_name):
 
   url = 'http://pypi.python.org/pypi/%s/' % project_name
   try:
-    fin = urllib2.urlopen(url)
+    fin = urllib.request.urlopen(url)
     text = fin.read()
     fin.close()
-  except urllib2.URLError:
+  except urllib.error.URLError:
     text = ''
   # The following url should always exist.
   re_url = re.compile(r'<a href="[^"]*/pypi/%s/([^"]+)">' % project_name, re.DOTALL)
@@ -59,4 +59,4 @@ def get_latest_version(project_name):
   return (ver, fname, md5)
 
 if __name__ == '__main__':
-  print get_latest_version('myzones')
+  print(get_latest_version('myzones'))

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Google Inc.
@@ -32,10 +32,10 @@ def _run_or_die(args, err_mess=None, output=True):
     output: output the command before running
   """
   if output:
-    print ' '.join(args)
+    print(' '.join(args))
   try:
     ret = subprocess.call(args)
-  except OSError, oserr:
+  except OSError as oserr:
     mess = 'Error running: %r: %r' % (' '.join(args), oserr)
     if err_mess:
       mess += '\n' + err_mess

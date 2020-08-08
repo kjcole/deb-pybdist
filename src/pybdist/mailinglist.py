@@ -53,21 +53,19 @@ def create_message(setup):
     release_regex = None
   rel_ver, rel_date, rel_lines = release.parse_last_release(
       setup.RELEASE_FILE, release_regex)
-  urls = [
-    'Homepage: %s' % setup.SETUP['url'],
-    ]
+  urls = [f'Homepage: {setup.SETUP["url"]}']
 
   if 'code.google.com' in setup.SETUP['url']:
-    urls.append('Download: %s/downloads/list' % setup.SETUP['url'])
+    urls.append(f'Download: {setup.SETUP["url"]}/downloads/list')
   else:
-    urls.append('Download: %s' % setup.SETUP['download_url'])
+    urls.append(f'Download: {setup.SETUP["download_url"]}')
 
   grps = re.match(r'([^@]+)@googlegroups.com', setup.MAILING_LIST)
   if grps:
-    urls.append('Manage mailing list: '
-                'http://groups.google.com/group/%s/subscribe' % grps.group(1))
+    urls.append(f'Manage mailing list: '
+                f'http://groups.google.com/group/{grps.group(1)}/subscribe')
   else:
-    urls.append('Mailing list: %s' % setup.MAILING_LIST)
+    urls.append(f'Mailing list: {setup.MAILING_LIST}')
 
   return DEFAULT_MESSAGE % {
       'rel_date': rel_date,
@@ -80,7 +78,7 @@ def create_message(setup):
       'author': setup.SETUP['author']}
 
 def create_subject(setup):
-  return _('[ANN] Release %s of %s') % (setup.SETUP['version'], setup.NAME)
+  return _(f'[ANN] Release {setup.SETUP["version"]} of {setup.NAME}')
 
 def send_email(to_email, subject, msg):
   rcinfo = netrc.netrc(os.path.expanduser('~/.netrc'))
@@ -90,27 +88,28 @@ def send_email(to_email, subject, msg):
   password = auth[2]
   server = 'smtp.gmail.com'
   port = 587
-  LOG.info('Connecting to %s:%s', server, port)
+  LOG.info(f'Connecting to {server}:{port}')
   server = smtplib.SMTP(server, port)
   server.ehlo()
   server.starttls()
   server.ehlo()
-  LOG.info('Logging in using email %s', email)
+  LOG.info(f'Logging in using email {email}')
   server.login(email, password)
-  full_message = ['To: %s' % to_email,
-      'From: %s <%s>' % (name, email),
-      'Reply-To: %s' % to_email,
-      'Subject: %s' % subject,
-      '',
-      msg]
-  LOG.info('Full Message\n%s', '\n'.join(full_message))
+  full_message = [f'To: {to_email}',
+                  f'From: {name} <{email}>',
+                  f'Reply-To: {to_email}',
+                  f'Subject: {subject}',
+                  '',
+                  msg]
+  LOG.info(f'Full Message\n'
+           f'{"\n".join(full_message)}')
   result = server.sendmail(email, to_email, '\n'.join(full_message))
   if result:
     errs = []
     for recip in result:
-      errs.append(
-          'Could not deliver mail to: %s\n'
-          'Server said: %s\n%s' % (recip, result[recip][0], result[recip][1]))
+      errs.append(f'Could not deliver mail to: {recip}\n'
+                  f'Server said: {result[recip][0]}\n'
+                  f'{result[recip][1]}')
     raise smtplib.SMTPException('\n'.join(errs))
   server.close()
 
@@ -118,7 +117,7 @@ def mail(setup):
   subject = create_subject(setup)
   message = create_message(setup)
   send_email(setup.MAILING_LIST, subject, message)
-  print('Sent mail to %s' % setup.MAILING_LIST)
+  print(f'Sent mail to {setup.MAILING_LIST}')
 
 if __name__ == '__main__':
   import sys

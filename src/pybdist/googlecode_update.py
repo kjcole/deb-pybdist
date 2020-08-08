@@ -20,7 +20,7 @@ def get_download_list(project_name):
     list of dictionary entries with 'update', 'summary', 'labels', and 'fname'
     set.
   """
-  url = 'http://code.google.com/feeds/p/%s/downloads/basic' % project_name
+  url = f'http://code.google.com/feeds/p/{project_name}/downloads/basic'
   try:
     fin = urllib.request.urlopen(url)
     text = fin.read()
@@ -82,9 +82,8 @@ def get_file_details(project_name, fname):
   Returns:
     dictionary with various things set.
   """
-  url = 'http://code.google.com/p/%s/downloads/detail?name=%s' % (
-      project_name, fname)
-  print('Checking SHA1 at %r' % url)
+  url = f'http://code.google.com/p/{project_name}/downloads/detail?name={fname}'
+  print(f'Checking SHA1 at {url!r}')
   try:
     fin = urllib.request.urlopen(url, timeout=200)
     text = fin.read()
@@ -107,7 +106,7 @@ def get_file_details(project_name, fname):
 
 def download_file(project_name, fname, dist_dir):
   """Downloads to file to distdir."""
-  url = 'http://%s.googlecode.com/files/%s' % (project_name, fname)
+  url = f'http://{project_name}.googlecode.com/files/{fname}'
   fin = urllib.request.urlopen(url, timeout=200)
   text = fin.read()
   fin.close()
@@ -151,18 +150,18 @@ def maybe_upload_file(project_name, dist_dir, fname,
     hex_digest = '-'
   if not details['sha1'] or hex_digest != details['sha1']:
     if details['sha1']:
-      print('SHA1 checksums don\'t match, uploading %r.' % fname)
+      print(f'SHA1 checksums don\'t match, uploading {fname!r}.')
     else:
-      print('File not there, uploading %r.' % fname)
+      print(f'File not there, uploading {fname!r}.')
     status, reason, url= googlecode_upload.upload(
       os.path.join(dist_dir, fname), project_name, username, password, summary, labels)
     if not url:
-      print('%r, %r' % (status, reason))
-      print('%r, %r, %r, %r' % (os.path.join(dist_dir, fname), project_name, summary, labels))
-      #print '%r, %r' % (username, password)
+      print(f'{status!r}, {reason!r}')
+      print(f'{os.path.join(dist_dir, fname)!r}, {project_name!r}, {summary!r}, {labels!r}')
+      #print(f'{username!r}, {password!r}')
       sys.exit(-1)
   else:
-    print('Checksums match, not uploading %r.' % fname)
+    print(f'Checksums match, not uploading {fname!r}.')
 
 
 def update_file(info, dist_dir, username, password):
@@ -176,9 +175,9 @@ def update_file(info, dist_dir, username, password):
     dist_dir: the destination filename that must exist.
     username: username to use
   """
-  print('Updating %s' % info['fname'])
+  print(f'Updating {info["fname"]}')
   googlecode_upload.upload(
-      '%s/%s' % (dist_dir, info['fname']),
+      f'{dist_dir}/{info["fname"]}',
       info['project_name'], username, password, info['summary'], info['labels'])
 
 
@@ -200,23 +199,22 @@ def remove_featured_labels(project_name, user_name, password, except_list=None):
       continue
     fname = os.path.join('dist', item['fname'])
     if not os.path.exists(fname):
-      print('Dowloading %r' % fname)
+      print(f'Dowloading {fname!r}')
       download_file(project_name, item['fname'], dist_dir)
     else:
-      print('Checking if I need to dowload %r' % fname)
+      print(f'Checking if I need to dowload {fname!r}')
       maybe_download_file(project_name, item['fname'], dist_dir)
 
   for item in lst:
     if except_list and item['fname'] in except_list:
       continue
     item['labels'].remove('Featured')
-    print('Removing "Featured" from %r' % item['fname'])
+    print(f'Removing "Featured" from {item["fname"]!r}')
     update_file(item, dist_dir, user_name, password)
 
 if __name__ == '__main__':
   import getpass
   USERNAME = 'scott@forusers.com'
-  print('Enter your googlecode password for %r' % USERNAME)
+  print(f'Enter your googlecode password for {USERNAME!r}')
   PASSWORD = getpass.getpass()
   remove_featured_labels('pybdist', USERNAME, PASSWORD)
-

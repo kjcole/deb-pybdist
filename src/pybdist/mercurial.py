@@ -70,7 +70,7 @@ def needs_hg_commit(verbose=True):
       print('Mercurial does not need a push', ret)
     return False
   if verbose:
-    print('Mercurial needs commit, %d files out of date' % len(lines))
+    print(f'Mercurial needs commit, {len(lines)} files out of date')
     print('\n'.join(lines))
   return True
 

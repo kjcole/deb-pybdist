@@ -46,11 +46,11 @@ class OverwriteFile(object):
     self.postfix = ext + '_bak'
     self.fname = fname
     if not os.path.exists(fname):
-      raise UpdateFileException('File not found %r' % self.fname)
+      raise UpdateFileException(f'File not found {self.fname!r}')
     self.old_stat = os.stat(fname).st_mode
     self.fin = open(self.fname, 'r')
     if not self.fin:
-      raise UpdateFileException('Unable to open file %r' % self.fname)
+      raise UpdateFileException(f'Unable to open file {self.fname!r}')
     self.dirname = os.path.dirname(self.fname)
     if not self.dirname:
       self.dirname = '.'
@@ -118,7 +118,7 @@ def update_lines(fname, regex, replace, max_replaces=1, min_replaces=1):
       match = re_f.search(line)
       if max_replaces > 0 and match:
         if len(match.groups()) != 1:
-          raise UpdateFileException('Your regex must have exactly 1 group %r' % regex)
+          raise UpdateFileException(f'Your regex must have exactly 1 group {regex!r}')
         max_replaces -= 1
         num_replaces += 1
         update.write(line[:match.start(1)])
@@ -129,5 +129,5 @@ def update_lines(fname, regex, replace, max_replaces=1, min_replaces=1):
     else:
       update.write(line)
   if num_replaces < min_replaces:
-    raise UpdateFileException('Not enough replacements performed on %r' % fname)
+    raise UpdateFileException(f'Not enough replacements performed on {fname!r}')
   update.close()

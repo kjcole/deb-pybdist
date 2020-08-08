@@ -30,7 +30,7 @@ def get_latest_version(project_name):
     (version, download_fname, download md5 digest)
   """
 
-  url = 'http://pypi.python.org/pypi/%s/' % project_name
+  url = f'http://pypi.python.org/pypi/{project_name}/'
   try:
     fin = urllib.request.urlopen(url)
     text = fin.read()
@@ -38,11 +38,11 @@ def get_latest_version(project_name):
   except urllib.error.URLError:
     text = ''
   # The following url should always exist.
-  re_url = re.compile(r'<a href="[^"]*/pypi/%s/([^"]+)">' % project_name, re.DOTALL)
+  re_url = re.compile(f'<a href="[^"]*/pypi/{project_name}/([^"]+)">', re.DOTALL)
 
   # Sometimes the download url does not exist.
   re_download = re.compile(
-      r'<a href="http://pypi.python.org/packages/source/m/%s/([^#]+)#md5=([^"]+)">' % project_name,
+      f'<a href="http://pypi.python.org/packages/source/m/{project_name}/([^#]+)#md5=([^"]+)">',
       re.DOTALL)
   grps = re_url.search(text)
   if grps:

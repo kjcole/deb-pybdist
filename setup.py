@@ -14,7 +14,7 @@ DEB_NAME = 'python-bdist'
 RELEASE_FILE = 'RELEASE.rst'
 LANGS = ['pt_BR']
 
-PY_SRC = '%s.py' % PY_NAME
+PY_SRC = f'{PY_NAME}.py'
 DEPENDS = ['fakeroot', 'lintian', 'help2man', 'build-essential',
     'python-twitter', 'python-simplejson', 'pychecker',
     'python-docutils', 'python-nose', 'aspell', 'aspell-en', 'python-polib',
@@ -26,7 +26,7 @@ AUTHOR_NAME = 'Scott Kirkwood'
 COPYRIGHT_NAME = 'Google Inc.'
 GOOGLE_CODE_EMAIL = 'scott@forusers.com'
 MAILING_LIST = 'pybdist-discuss@googlegroups.com'
-VCS = 'http://%s.code.google.com/hg' % NAME
+VCS = f'http://{NAME}.code.google.com/hg'
 
 SETUP = dict(
   name=NAME,
@@ -43,8 +43,8 @@ SETUP = dict(
   platforms=['POSIX'],
   license='Apache 2.0',
   keywords=['python', 'utility', 'library'],
-  url='http://code.google.com/p/%s' % NAME,
-  download_url='http://%s.googlecode.com/files/%s-%s.zip' % (NAME, NAME, VER),
+  url=f'http://code.google.com/p/{NAME}',
+  download_url=f'http://{NAME}.googlecode.com/files/{NAME}-{VER}.zip',
   description=_('Python Build Distribution Library (pybdist)'),
   long_description=_("""A library used for personal projects to create a zip, tar and Debian
 distributions.  Assumes folders are in a certain location so might not be

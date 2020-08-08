@@ -56,7 +56,7 @@ def parse_last_release(fname, pattern=None):
       lines.append(line)
 
   if not lines:
-    raise ReleaseException('No line with %r pattern found in %r' % (pattern, fname))
+    raise ReleaseException(f'No line with {pattern!r} pattern found in {fname!r}')
 
   if not lines[-1]:
     del lines[-1]
@@ -75,8 +75,8 @@ def parse_deb_changelog(fname):
     grps = re_ver.search(line)
     if grps:
       if version:
-        print('Bad changelog, got two versions %r & %r' % (version, grps.group(1)))
-        print('Probably means I couldn\'t find the date line "%s".' % re_date_exp)
+        print(f'Bad changelog, got two versions {version!r} & {grps.group(1)!r}')
+        print(f'Probably means I couldn\'t find the date line "{re_date_exp}".')
         raise ReleaseException('Bad debian/changelog')
       version = grps.group(1)
       continue
@@ -94,20 +94,20 @@ def parse_deb_changelog(fname):
 
 def out_debian_changelog(settings, lines):
   ret = []
-  ret.append('%s (%s-1) unstable; urgency=low' % (settings.NAME, settings.VER))
+  ret.append(f'{settings.NAME} ({settings.VER}-1) unstable; urgency=low')
   ret.append('')
-  ret += ['  %s' % l for l in lines]
+  ret += [f'  {l}' for l in lines]
   ret.append('')
   datestr = time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime())
-  datestr += ' %+05d' % (time.timezone/36)
-  ret.append(' -- %s <%s>  %s' % (settings.AUTHOR_NAME, settings.GOOGLE_CODE_EMAIL, datestr))
+  datestr += f' {time.timezone/36:+05g}'
+  ret.append(f' -- {settings.AUTHOR_NAME} <{settings.GOOGLE_CODE_EMAIL}>  {datestr}')
   ret.append('')
   ret.append('')
   return ret
 
 def _get_last_versions(project_name):
   versions = []
-  re_version = re.compile(r'%s-(.*).tar.gz' % project_name)
+  re_version = re.compile(f'{project_name}-(.*).tar.gz')
   for info in googlecode_update.get_download_list(project_name):
     grps = re_version.search(info['fname'])
     if grps:

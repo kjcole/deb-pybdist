@@ -36,12 +36,13 @@ def _run_or_die(args, err_mess=None, output=True):
   try:
     ret = subprocess.call(args)
   except OSError as oserr:
-    mess = 'Error running: %r: %r' % (' '.join(args), oserr)
+    mess = f'Error running: {" ".join(args)!r}: {oserr!r}'
     if err_mess:
       mess += '\n' + err_mess
     raise RstCheckException(err_mess)
   if ret:
-    raise RstCheckException('Error running: code %r\n%r' % (ret, ' '.join(args)))
+    raise RstCheckException(f'Error running: code {ret!r}\n'
+                            f'{" ".join(args)!r}')
 
 
 def check_file(fname):
@@ -54,5 +55,5 @@ def check_text(rst_text):
   os.write(t_out, rst_text)
   os.close(t_out)
   args = ['rst2html', '--strict', fname_tmp, '/dev/null']
-  _run_or_die(args, 'Note: left a tempfile at %r' % fname_tmp)
+  _run_or_die(args, f'Note: left a tempfile at {fname_tmp!r}')
   os.unlink(fname_tmp)

@@ -42,12 +42,13 @@ def _run_or_die(args, err_mess=None, output=True):
   try:
     ret = subprocess.call(args)
   except OSError as oserr:
-    mess = 'Error running: %r: %r' % (' '.join(args), oserr)
+    mess = f'Error running: {" ".join(args)!r}: {oserr!r}'
     if err_mess:
       mess += '\n' + err_mess
     raise SpellCheckException(err_mess)
   if ret:
-    raise SpellCheckException('Error running: code %r\n%r' % (ret, ' '.join(args)))
+    raise SpellCheckException(f'Error running: code {ret!r}\n'
+                              f'{" ".join(args)!r}')
 
 
 def check_file(fname, dictionary):

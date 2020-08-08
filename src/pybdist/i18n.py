@@ -32,7 +32,7 @@ def _run_or_die(args, output=True):
     print(' '.join(args))
   ret = subprocess.call(args)
   if ret:
-    raise I18nException('Error running: %r' % ' '.join(args))
+    raise I18nException(f'Error running: {" ".join(args)!r}')
 
 def build_get_text(out_pot, dirs):
   """Creates .pot file from source python files.
@@ -52,12 +52,12 @@ def make_empty_po_file(fname, lang, setup):
   po = polib.POFile()
   curtime = time.strftime('%Y-%m-%d %H:%M+', time.localtime())
   curtime += time.tzname[0]
-  po.metadata['Project-Id-Version'] = '%s' % setup.NAME
+  po.metadata['Project-Id-Version'] = f'{setup.NAME}'
   po.metadata['Report-Msgid-Bugs-To'] = setup.SETUP['author_email']
   po.metadata['POT-Creation-Date'] = curtime
   po.metadata['PO-Revision-Date'] = curtime
   po.metadata['Last-Translator'] = 'you <you@example.com>'
-  po.metadata['Language-Team'] = '%s team' % lang
+  po.metadata['Language-Team'] = f'{lang} team'
   po.metadata['MIME-Version'] = '1.0'
   po.metadata['Content-Type'] = 'text/plain; charset=utf-8'
   po.metadata['Content-Transfer-Encoding'] = '8bit'
@@ -74,7 +74,7 @@ def update_po_files(potfile, locale_dir, langs):
     possibly list of problem file [ (lang, fname) ]
   """
   if not potfile.endswith('.pot'):
-    raise I18nException('Your .pot file must end with .pot %r' % potfile)
+    raise I18nException(f'Your .pot file must end with .pot {potfile!r}')
   po_name = os.path.split(potfile)[1].replace('.pot', '.po')
   missing = []
   for lang in langs:
@@ -127,4 +127,4 @@ def count_untranslated(locale_dir, langs):
         po = polib.pofile(pofilename)
         un = po.untranslated_entries()
         if un:
-          print('%r has %d untranslated entries' % (pofilename, len(un)))
+          print(f'{pofilename!r} has {len(un)} untranslated entries')

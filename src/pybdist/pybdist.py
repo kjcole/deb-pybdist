@@ -58,7 +58,7 @@ def fixup_setup(setup):
   if not hasattr(setup, 'PY_NAME'):
     setup.PY_NAME = setup.NAME
   if not hasattr(setup, 'PY_SRC'):
-    setup.PY_SRC = '%s.py' % setup.PY_NAME
+    setup.PY_SRC = f'{setup.PY_NAME}.py'
   if not hasattr(setup, 'DEB_NAME'):
     setup.DEB_NAME = setup.NAME
   if not hasattr(setup, 'AUTHOR_NAME'):
@@ -79,12 +79,13 @@ def _run_or_die(args, err_mess=None, output=True):
   try:
     ret = subprocess.call(args)
   except OSError as oserr:
-    mess = 'Error running: %r: %r' % (' '.join(args), oserr)
+    mess = f"Error running: {' '.join(args}!r}: {oserr!r}"
     if err_mess:
       mess += '\n' + err_mess
     raise PyBdistException(err_mess)
   if ret:
-    raise PyBdistException('Error running: code %r\n%r' % (ret, ' '.join(args)))
+    raise PyBdistException(f'Error running: code {ret!r}\n'
+                           f'{" ".join(args)!r}')
 
 
 def _get_py_source_version(setup):
@@ -92,7 +93,7 @@ def _get_py_source_version(setup):
   re_py_ver = re.compile(r'__version__\s*=\s*[\'"](.*)[\'"]')
   grps = re_py_ver.search(open(fname).read())
   if not grps:
-    raise PyBdistException('Unable to find __version__ in %r' % fname)
+    raise PyBdistException(f'Unable to find __version__ in {fname!r}')
   source_ver = grps.group(1)
   return source_ver
 
@@ -110,10 +111,10 @@ def get_and_verify_versions(setup):
   if (setup_ver != source_ver or setup_ver != rel_ver
       or setup_ver != changelog_ver):
     print('** Local setup versions don\'t agree')
-    print('** setup.py = %r' % setup_ver)
-    print('** %s/%s = %r' % (setup.DIR, setup.PY_SRC, source_ver))
-    print('** %s = %r' % (setup.RELEASE_FILE, rel_ver))
-    print('** %s = %r' % ('debian/changelog', changelog_ver))
+    print(f'** setup.py = {setup_ver!r}')
+    print(f'** {setup.DIR}/{setup.PY_SRC} = {source_ver!r}')
+    print(f'** {setup.RELEASE_FILE} = {rel_ver!r}')
+    print(f'** debian/changelog = {changelog_ver!r}')
     raise PyBdistException('Setup versions don\'t agree')
   print('   Local setup versions agree')
   return setup_ver
@@ -126,12 +127,12 @@ def verify_remote_versions(setup):
   if gc_ver and gc_ver == setup_ver:
     print('   code.google.com version is up-to-date')
   else:
-    print('** Note: code.google.com version is at %r and needs to be uploaded' % gc_ver)
+    print(f'** Note: code.google.com version is at {gc_ver!r} and needs to be uploaded')
 
   if pypi_ver and pypi_ver == setup_ver:
     print('   pypi version is up-to-date')
   else:
-    print('** Note: pypi.python.org version is at %r and needs to be uploaded' % pypi_ver)
+    print(f'** Note: pypi.python.org version is at {pypi_ver!r} and needs to be uploaded')
 
 
 def _parse_last_release(setup):
@@ -171,7 +172,7 @@ def build_man(setup):
 
   dest_dir = os.path.dirname(setup.MAN_FILE)
   if not os.path.isdir(dest_dir):
-    print('Making directory %r' % dest_dir)
+    print(f'Making directory {dest_dir!r}')
     os.makedirs(dest_dir)
   langs = ['']
   if hasattr(setup, 'LANGS'):
@@ -180,8 +181,8 @@ def build_man(setup):
     if not lang:
       lang_dot = ''
     else:
-      lang_dot = '%s.' % lang
-    cur_manfile = setup.MAN_FILE.replace('.1', '.%s1' % lang_dot)
+      lang_dot = f'{lang}.'
+    cur_manfile = setup.MAN_FILE.replace('.1', f'.{lang_dot}1')
     include_file = cur_manfile.replace('.1', '.include')
     if not lang:
       locale = 'C'
@@ -189,8 +190,8 @@ def build_man(setup):
       locale = lang
     args = [
       'help2man',
-      '%s/%s' % (setup.DIR, setup.PY_SRC),
-      #'%s' % setup.NAME,
+      f'{setup.DIR}/{setup.PY_SRC}',
+      #f'{setup.NAME}',
       '--locale', locale,
       '-N', # no pointer to TextInfo
       '-i', include_file,
@@ -199,7 +200,7 @@ def build_man(setup):
         'Failed to build manfile',
         'You may need to install help2man']))
 
-  print('Built %s.1' % setup.NAME)
+  print(f'Built {setup.NAME}.1')
 
 
 def _get_var(setup, var):
@@ -219,7 +220,7 @@ def get_deb_filenames(setup):
   Returns:
     list of fnames without the folder name.
   """
-  debs = 'dist/%s_%s*all.deb' % (setup.DEB_NAME, setup.VER)
+  debs = f'dist/{setup.DEB_NAME}_{setup.VER}*all.deb'
   ret = []
   for deb in glob.glob(debs):
     ret.append(deb.replace('dist/', ''))
@@ -227,7 +228,7 @@ def get_deb_filenames(setup):
 
 
 def clean_config(setup):
-  config_file = os.path.expanduser('~/.config/%s/config' % setup.NAME)
+  config_file = os.path.expanduser(f'~/.config/{setup.NAME}/config')
   if os.path.exists(config_file):
     os.unlink(config_file)
 
@@ -235,18 +236,18 @@ def clean_config(setup):
 def _clean_doc(setup):
   if not setup.NAME:
     raise PyBdistException('Missing setup.NAME')
-  docs = '/usr/share/doc/%s' % setup.NAME
+  docs = f'/usr/share/doc/{setup.NAME}'
   if os.path.exists(docs) and os.path.isdir(docs):
-    print('rm -r %s' % docs)
+    print(f'rm -r {docs}')
     shutil.rmtree(docs)
 
 
 def _clean_man(setup):
   if not setup.NAME:
     raise PyBdistException('Missing setup.NAME')
-  man = '/usr/share/man/man1/%s.1.gz' % setup.NAME
+  man = f'/usr/share/man/man1/{setup.NAME}.1.gz'
   if os.path.exists(man):
-    print('rm %s' % man)
+    print(f'rm {man}')
 
 
 def _clean_scripts(setup):
@@ -255,9 +256,9 @@ def _clean_scripts(setup):
   for script in setup.SETUP['scripts']:
     if not script.strip():
       raise PyBdistException('Missing setup.SETUP.scripts')
-    bin_script = '/usr/local/bin/%s' % os.path.basename(script)
+    bin_script = f'/usr/local/bin/{os.path.basename(script)}'
     if os.path.exists(bin_script):
-      print('rm %s' % bin_script)
+      print(f'rm {bin_script}')
       os.unlink(bin_script)
 
 
@@ -268,27 +269,27 @@ def _clean_packages(setup):
       '/usr/local/lib/python2.6/dist-packages']
   base_dir = os.path.basename(setup.DIR)
   if not base_dir.strip():
-    raise PyBdistException('%r is not a good name' % setup.DIR)
+    raise PyBdistException(f'{setup.DIR!r} is not a good name')
 
   for dist_dir in dist_dirs:
     if not os.path.exists(dist_dir):
       continue
-    dist_packages = '%s/%s' % (dist_dir, base_dir)
+    dist_packages = f'{dist_dir}/{base_dir}'
     if os.path.exists(dist_packages):
-      print('rm -r %s' % dist_packages)
+      print(f'rm -r {dist_packages}')
       shutil.rmtree(dist_packages)
     _clean_eggs(dist_dir, setup)
 
 
 def _clean_eggs(dist_dir, setup):
-  dist_egg = '%s/%s-*.egg-info' % (dist_dir, setup.PY_NAME)
+  dist_egg = f'{dist_dir}/{setup.PY_NAME}-*.egg-info'
   for fname in glob.glob(dist_egg):
     if os.path.exists(fname):
       if os.path.isdir(fname):
-        print('rm -r %s' % fname)
+        print(f'rm -r {fname}')
         shutil.rmtree(fname)
       else:
-        print('rm %s' % fname)
+        print(f'rm {fname}')
         os.unlink(fname)
 
 
@@ -302,7 +303,7 @@ def clean_all(setup):
 
 def print_release_info(setup):
   rel_date, rel_lines = parse_last_release(setup)
-  print('Local version is %r, date %r' % (setup.VER, rel_date))
+  print(f'Local version is {setup.VER!r}, date {rel_date!r}')
   print('Release notes')
   print('-------------')
   print('\n'.join(rel_lines))
@@ -357,8 +358,8 @@ def check_spelling(setup):
   spell_check.check_code_file('setup.py', dictionary)
 
 def _maybe_update_file(old_fname, old_ver, new_fname, new_ver, replace_text, regex, del_lines=0):
-  print('%r has version %r and %r has version %r' % (old_fname, old_ver, new_fname, new_ver))
-  prompt = 'Update %r?: ' % old_fname
+  print(f'{old_fname!r} has version {old_ver!r} and {new_fname!r} has version {new_ver!r}')
+  prompt = f'Update {old_fname!r}?: '
   yn = input(prompt)
   if yn.lower() == 'y':
     if regex:
@@ -430,22 +431,22 @@ def get_pass_from(fname):
   if os.path.exists(fname):
     mode = os.stat(fname).st_mode
     if mode & 0o077:
-      print('Change permissions on file first, chmod 600 %r' % fname)
+      print(f'Change permissions on file first, chmod 600 {fname!r}')
       return None
     dirname = os.path.dirname(fname)
     mode = os.stat(dirname).st_mode
     if mode & 0o077:
-      print('Change permission on directory first, chmod 700 %r' % dirname)
+      print(f'Change permission on directory first, chmod 700 {dirname!r}')
       return None
     return file(fname).read().rstrip()
   else:
-    print('%r not found' % fname)
+    print(f'{fname!r} not found')
   return None
 
 
 def upload_to_google_code(setup):
-  print('Using user %r' % setup.GOOGLE_CODE_EMAIL)
-  password = get_pass_from('~/.ssh/%s' % setup.GOOGLE_CODE_EMAIL)
+  print(f'Using user {setup.GOOGLE_CODE_EMAIL!r}')
+  password = get_pass_from(f'~/.ssh/{setup.GOOGLE_CODE_EMAIL}')
   if not password:
     # Read password if not loaded from svn config, or on subsequent tries.
     print('Please enter your googlecode.com password.')
@@ -455,8 +456,8 @@ def upload_to_google_code(setup):
     password = getpass.getpass()
   username = setup.GOOGLE_CODE_EMAIL
   files = [
-    '%s-%s.zip' % (setup.NAME, setup.VER),
-    '%s-%s.tar.gz' % (setup.NAME, setup.VER),
+    f'{setup.NAME}-{setup.VER}.zip',
+    f'{setup.NAME}-{setup.VER}.tar.gz',
   ] + get_deb_filenames(setup)
   # removes all 'Featured' downloads that aren't in my list of `files`
   googlecode_update.remove_featured_labels(
@@ -495,16 +496,16 @@ def announce_on_freshmeat(setup):
     tag = 'Feature enhancements'
   changelog = ['Changes: '] + rel_lines
   release_dict = dict(version=setup.VER, changelog='\n'.join(changelog), tag_list=tag)
-  path = '/projects/%s/releases.json' % name
+  path = f'/projects/{name}/releases.json'
   body = codecs.encode(simplejson.dumps(dict(auth_code=auth_code, release=release_dict)))
   connection = http.client.HTTPConnection('freshmeat.net')
   connection.request('POST', path, body, {'Content-Type': 'application/json'})
   response = connection.getresponse()
   if response.status == 404:
-    print('Project %r not found, may have to add FRESHMEAT to setup.py' % name)
+    print(f'Project {name!r} not found, may have to add FRESHMEAT to setup.py')
     raise PyBdistException('Freshmeat project not found, please register.')
   elif  response.status != 201:
-    print('Request failed: %d %s' % (response.status, response.reason))
+    print(f'Request failed: {response.status} {response.reason}')
     raise PyBdistException('Freshmeat upload failed')
   print('Done announcing on Freshmeat.')
 
@@ -521,10 +522,10 @@ def announce_on_twitter(setup):
   print('Done announcing on twitter.')
 
 def _get_pot_filename(setup):
-  return os.path.join(_get_locale_dir(setup), '%s.pot' % setup.NAME)
+  return os.path.join(_get_locale_dir(setup), f'{setup.NAME}.pot')
 
 def _get_locale_dir(setup):
-  return '%s/locale' % setup.DIR
+  return f'{setup.DIR}/locale'
 
 def build_get_text(setup):
   # TODO(scottkirkwood): sub-directories
@@ -534,7 +535,7 @@ def build_get_text(setup):
 def update_po_files(setup):
   missing = i18n.update_po_files(_get_pot_filename(setup), _get_locale_dir(setup), setup.LANGS)
   for lang, fname in missing:
-    print('Creating %r' % fname)
+    print(f'Creating {fname!r}')
     i18n.make_empty_po_file(fname, lang, setup)
 
 def compile_po_files(setup):

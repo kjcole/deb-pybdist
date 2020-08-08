@@ -53,11 +53,11 @@ def _safe_overwrite(lines, fname):
         can_overwrite = True
         break
   if not can_overwrite:
-    LOG.info('%r not overwritten because it\'s missing magic string %r', fname, MAGIC_NAME)
+    LOG.info(f'{fname!r} not overwritten because it\'s missing magic string {MAGIC_NAME!r}')
     return
   tmpdir = os.path.join(tempfile.gettempdir(), 'pybdist')
   if not os.path.isdir(tmpdir):
-    LOG.info('Makeing directory %r', tmpdir)
+    LOG.info(f'Makeing directory {tmpdir!r}')
     os.makedirs(tmpdir)
   out_tempname = os.path.join(tmpdir, 'tmp.tmp')
   outf = codecs.open(out_tempname, encoding='utf-8', mode='w')
@@ -66,10 +66,10 @@ def _safe_overwrite(lines, fname):
   if os.path.exists(fname):
     if filecmp.cmp(out_tempname, fname):
       os.unlink(out_tempname)
-      LOG.info('%r is the same', fname)
+      LOG.info(f'{fname!r} is the same')
       return
 
-    prompt = 'Update %r?: ' % fname
+    prompt = f'Update {fname!r}?: '
     yn = input(prompt)
     if yn.lower() != 'y':
       os.unlink(out_tempname)
@@ -78,8 +78,8 @@ def _safe_overwrite(lines, fname):
 
   backup_name = os.path.join(tmpdir, os.path.basename(fname))
   if os.path.exists(fname):
-    LOG.info('backup stored at %r', backup_name)
+    LOG.info(f'backup stored at {backup_name!r}')
     os.rename(fname, backup_name)
   os.rename(out_tempname, fname)
-  LOG.info('Wrote %r', fname)
-  print('Updated %r' % fname)
+  LOG.info(f'Wrote {fname!r}')
+  print(f'Updated {fname!r}')
